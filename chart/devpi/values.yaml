@@ -1,0 +1,112 @@
+# Default values for the devpi chart.
+# Override any of these with --set, -f, or your own values file.
+
+replicaCount: 1  # devpi's server dir does not support concurrent writers; keep at 1
+
+image:
+  repository: ghcr.io/khrpcek/devpi
+  # Overrides the image tag. Defaults to the chart's appVersion when empty.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 3141
+  annotations: {}
+
+# devpi runtime configuration
+devpi:
+  # Additional arguments passed to `devpi-server` (e.g. --restrict-modify, --no-root-pypi)
+  extraArgs: []
+  # Initial root password used by `devpi-init` on FIRST start only.
+  # Changing it later has no effect on an already-initialized data directory.
+  rootPassword: ""
+  # Use an existing secret instead of creating one. The secret must contain
+  # the password under the key `root-password`.
+  existingSecret: ""
+
+# Persistence: a PVC keeps the devpi server dir intact across restarts.
+persistence:
+  enabled: true
+  # Name of the StorageClass to request. Leave empty ("") to use the
+  # cluster's default StorageClass.
+  storageClass: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 5Gi
+  annotations: {}
+  # Use an existing PVC instead of creating a new one.
+  existingClaim: ""
+
+ingress:
+  enabled: true
+  # IngressClass used for the Ingress object (e.g. nginx, traefik, haproxy)
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: devpi.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  # Example:
+  # tls:
+  #   - secretName: devpi-tls
+  #     hosts:
+  #       - devpi.example.com
+  tls: []
+
+# Use Recreate so the RWO volume can detach cleanly between pod replacements.
+strategy:
+  type: Recreate
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 20
+  periodSeconds: 15
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+resources: {}
+# resources:
+#   requests:
+#     cpu: 100m
+#     memory: 256Mi
+#   limits:
+#     memory: 512Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

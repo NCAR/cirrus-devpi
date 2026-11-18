@@ -1,0 +1,13 @@
+apiVersion: v2
+name: devpi
+description: A Helm chart for devpi - a private PyPI index and caching proxy server
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - pypi
+  - pip
+  - python
+  - devpi
+maintainers:
+  - name: khrpcek

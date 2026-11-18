@@ -1,0 +1,19 @@
+{{- if .Values.ingress.enabled }}
+devpi has been deployed and is reachable via the following ingress hosts:
+
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+
+Get the ingress address with:
+  kubectl get ingress {{ include "devpi.fullname" . }}
+{{- else }}
+devpi is reachable inside the cluster at:
+
+  http://{{ include "devpi.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.port }}
+
+Enable the ingress in your values file to expose it externally.
+{{- end }}
+
+Point pip at it:
+  pip install --index-url http://<host>/root/prod/+simple/ <package>
