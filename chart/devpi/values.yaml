@@ -51,7 +51,8 @@ ingress:
   enabled: true
   # IngressClass used for the Ingress object (e.g. nginx, traefik, haproxy)
   className: traefik-internal
-  annotations: {}
+  annotations:
+    cert-manager.io/cluster-issuer: incommon
   hosts:
     - host: devpi.k8s.ucar.edu
       paths:
