@@ -3,7 +3,7 @@ set -eu
 
 DATA_DIR="${DEVPI_DATA_DIR:-/data}"
 delim=":"
-PORT="${$DEVPI_PORT##*"$delim"}"
+PORT="${DEVPI_PORT##*"$delim"}"
 
 INIT_ARGS=""
 if [ -n "${DEVPI_ROOT_PASSWORD:-}" ]; then
