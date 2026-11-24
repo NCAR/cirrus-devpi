@@ -4,10 +4,10 @@
 replicaCount: 1  # devpi's server dir does not support concurrent writers; keep at 1
 
 image:
-  repository: ghcr.io/khrpcek/devpi
+  repository: hub.k8s.ucar.edu/cirrus-devpi/cirrus-devpi
   # Overrides the image tag. Defaults to the chart's appVersion when empty.
-  tag: ""
-  pullPolicy: IfNotPresent
+  tag: "latest"
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
@@ -39,10 +39,10 @@ persistence:
   enabled: true
   # Name of the StorageClass to request. Leave empty ("") to use the
   # cluster's default StorageClass.
-  storageClass: ""
+  storageClass: "ceph-kubepv"
   accessModes:
     - ReadWriteOnce
-  size: 5Gi
+  size: 50Gi
   annotations: {}
   # Use an existing PVC instead of creating a new one.
   existingClaim: ""
@@ -50,18 +50,18 @@ persistence:
 ingress:
   enabled: true
   # IngressClass used for the Ingress object (e.g. nginx, traefik, haproxy)
-  className: nginx
+  className: traefik-internal
   annotations: {}
   hosts:
-    - host: devpi.example.com
+    - host: devpi.k8s.ucar.edu
       paths:
         - path: /
           pathType: Prefix
   # Example:
-  # tls:
-  #   - secretName: devpi-tls
-  #     hosts:
-  #       - devpi.example.com
+  tls:
+    - secretName: devpi-tls
+      hosts:
+        - devpi.k8s.ucar.edu
   tls: []
 
 # Use Recreate so the RWO volume can detach cleanly between pod replacements.
@@ -99,13 +99,13 @@ readinessProbe:
   initialDelaySeconds: 5
   periodSeconds: 10
 
-resources: {}
-# resources:
-#   requests:
-#     cpu: 100m
-#     memory: 256Mi
-#   limits:
-#     memory: 512Mi
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    memory: 512Mi
 
 nodeSelector: {}
 tolerations: []
