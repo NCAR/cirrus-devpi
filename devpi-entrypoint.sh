@@ -2,8 +2,8 @@
 set -eu
 
 DATA_DIR="${DEVPI_DATA_DIR:-/data}"
-IFS=',' read -ra asdf <<< "$DEVPI_PORT"
-PORT="${asdf[-1]}"
+delim=":"
+PORT="${$DEVPI_PORT##*"delim"}"
 
 INIT_ARGS=""
 if [ -n "${DEVPI_ROOT_PASSWORD:-}" ]; then
