@@ -19,7 +19,8 @@ permissions:
 jobs:
   build-and-push:
     name: Build and push container image
-    runs-on: ubuntu-latest
+    runs-on:
+      group: CIRRUS-4x8
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
